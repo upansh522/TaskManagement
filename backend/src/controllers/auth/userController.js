@@ -8,7 +8,6 @@ import crypto from "node:crypto";
 import hashToken from "../../helpers/hashToken.js";
 import sendEmail from "../../helpers/sendEmail.js";
 
-// Import Zod schemas
 import {
   registerUserSchema,
   loginUserSchema,
