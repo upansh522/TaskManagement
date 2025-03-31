@@ -9,16 +9,6 @@ export const createTaskSchema = z.object({
   status: z.string().optional(),
 });
 
-// Schema for updating a task
-export const updateTaskSchema = z.object({
-  title: z.string().optional(),
-  description: z.string().optional(),
-  dueDate: z.string().optional(),
-  priority: z.string().optional(),
-  status: z.string().optional(),
-  completed: z.boolean().optional(),
-});
-
 // Schema for task id parameter (for get, delete, update)
 export const taskIdParamSchema = z.object({
   id: z.string().nonempty("Task id is required"),

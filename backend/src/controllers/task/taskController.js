@@ -4,7 +4,6 @@ import TaskModel from "../../models/tasks/TaskModel.js";
 // Import Zod schemas
 import {
   createTaskSchema,
-  updateTaskSchema,
   taskIdParamSchema,
 } from "../../validations/task.js";
 
@@ -68,41 +67,45 @@ export const getTask = asyncHandler(async (req, res) => {
 
 // update task
 export const updateTask = asyncHandler(async (req, res) => {
-  const paramParsed = taskIdParamSchema.safeParse(req.params);
-  if (!paramParsed.success) {
-    return res
-      .status(400)
-      .json({ message: paramParsed.error.errors.map((err) => err.message).join(", ") });
-  }
-  const { id } = paramParsed.data;
-  const bodyParsed = updateTaskSchema.safeParse(req.body);
-  if (!bodyParsed.success) {
-    return res
-      .status(400)
-      .json({ message: bodyParsed.error.errors.map((err) => err.message).join(", ") });
-  }
-  const { title, description, dueDate, priority, status, completed } = bodyParsed.data;
-  const userId = req.user._id;
+  try {
+    const userId = req.user._id;
 
-  const task = await TaskModel.findById(id);
-  if (!task) {
-    return res.status(404).json({ message: "Task not found!" });
-  }
-  if (!task.user.equals(userId)) {
-    return res.status(401).json({ message: "Not authorized!" });
-  }
+    const { id } = req.params;
+    const { title, description, dueDate, priority, status, completed } =
+      req.body;
 
-  // Update task fields with new data if provided
-  task.title = title || task.title;
-  task.description = description || task.description;
-  task.dueDate = dueDate || task.dueDate;
-  task.priority = priority || task.priority;
-  task.status = status || task.status;
-  task.completed = typeof completed !== "undefined" ? completed : task.completed;
+    if (!id) {
+      res.status(400).json({ message: "Please provide a task id" });
+    }
 
-  await task.save();
-  res.status(200).json(task);
+    const task = await TaskModel.findById(id);
+
+    if (!task) {
+      res.status(404).json({ message: "Task not found!" });
+    }
+
+    // check if the user is the owner of the task
+    if (!task.user.equals(userId)) {
+      res.status(401).json({ message: "Not authorized!" });
+    }
+
+    // update the task with the new data if provided or keep the old data
+    task.title = title || task.title;
+    task.description = description || task.description;
+    task.dueDate = dueDate || task.dueDate;
+    task.priority = priority || task.priority;
+    task.status = status || task.status;
+    task.completed = completed || task.completed;
+
+    await task.save();
+
+    return res.status(200).json(task);
+  } catch (error) {
+    console.log("Error in updateTask: ", error.message);
+    res.status(500).json({ message: error.message });
+  }
 });
+
 
 // delete task
 export const deleteTask = asyncHandler(async (req, res) => {
