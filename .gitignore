@@ -1,0 +1,15 @@
+# .gitignore
+
+# Dependencies
+node_modules/
+
+# Environment Variables
+.env
+.env.local
+
+# Next.js build output
+.next/
+out/
+
+# Production
+build/

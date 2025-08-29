@@ -1,0 +1,15 @@
+# Task Service Development Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package.json package-lock.json* ./
+RUN npm install
+
+# Copy source code
+COPY . .
+
+EXPOSE 8002
+
+CMD ["npm", "start"]

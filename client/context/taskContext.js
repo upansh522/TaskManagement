@@ -5,10 +5,15 @@ import toast from "react-hot-toast";
 
 const TasksContext = createContext();
 
-const serverUrl = "https://taskmanagement-backend-29fb.onrender.com/api/v1";
+const serverUrl =
+  process.env.NEXT_PUBLIC_TASK_SERVICE_URL;
+
+// Set axios defaults for task service
+axios.defaults.withCredentials = true;
 
 export const TasksProvider = ({ children }) => {
-  const userId = useUserContext().user._id;
+  const { user } = useUserContext();
+  const userId = user?._id;
 
   const [tasks, setTasks] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
@@ -53,6 +58,11 @@ export const TasksProvider = ({ children }) => {
       setTasks(response.data.tasks);
     } catch (error) {
       console.log("Error getting tasks", error);
+      if (error.response?.status === 401) {
+        toast.error("Please login to access tasks");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to fetch tasks");
+      }
     }
     setLoading(false);
   };
@@ -66,6 +76,13 @@ export const TasksProvider = ({ children }) => {
       setTask(response.data);
     } catch (error) {
       console.log("Error getting task", error);
+      if (error.response?.status === 401) {
+        toast.error("Not authorized to access this task");
+      } else if (error.response?.status === 404) {
+        toast.error("Task not found");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to fetch task");
+      }
     }
     setLoading(false);
   };
@@ -81,6 +98,11 @@ export const TasksProvider = ({ children }) => {
       toast.success("Task created successfully");
     } catch (error) {
       console.log("Error creating task", error);
+      if (error.response?.status === 401) {
+        toast.error("Please login to create tasks");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to create task");
+      }
     }
     setLoading(false);
   };
@@ -100,7 +122,15 @@ export const TasksProvider = ({ children }) => {
       setTasks(newTasks);
     } catch (error) {
       console.log("Error updating task", error);
+      if (error.response?.status === 401) {
+        toast.error("Not authorized to update this task");
+      } else if (error.response?.status === 404) {
+        toast.error("Task not found");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to update task");
+      }
     }
+    setLoading(false);
   };
 
   const deleteTask = async (taskId) => {
@@ -112,9 +142,18 @@ export const TasksProvider = ({ children }) => {
       const newTasks = tasks.filter((tsk) => tsk._id !== taskId);
 
       setTasks(newTasks);
+      toast.success("Task deleted successfully");
     } catch (error) {
       console.log("Error deleting task", error);
+      if (error.response?.status === 401) {
+        toast.error("Not authorized to delete this task");
+      } else if (error.response?.status === 404) {
+        toast.error("Task not found");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to delete task");
+      }
     }
+    setLoading(false);
   };
 
   const handleInput = (name) => (e) => {
@@ -132,7 +171,9 @@ export const TasksProvider = ({ children }) => {
   const activeTasks = tasks.filter((task) => !task.completed);
 
   useEffect(() => {
-    getTasks();
+    if (userId) {
+      getTasks();
+    }
   }, [userId]);
 
   console.log("Active tasks", activeTasks);
@@ -143,7 +184,6 @@ export const TasksProvider = ({ children }) => {
         tasks,
         loading,
         task,
-        tasks,
         getTask,
         createTask,
         updateTask,
