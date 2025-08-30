@@ -43,7 +43,7 @@ services:
     runtime: docker
     buildFilter:
       paths:
-      - backend/task_service/** # Adjust path if needed
+      - backend/task_service/** # Adjust path here if needed
     dockerfilePath: ./backend/task_service/Dockerfile
     envVars:
       - key: MONGO_URI
@@ -67,7 +67,7 @@ services:
       paths:
       - client/**
     dockerfilePath: ./client/Dockerfile
-    # These variables are needed AT BUILD TIME for Next.js
+    # --- THIS ENTIRE BLOCK HAS BEEN CORRECTLY INDENTED ---
     dockerBuildArgs:
       NEXT_PUBLIC_CLIENT_URL:
         fromService:
