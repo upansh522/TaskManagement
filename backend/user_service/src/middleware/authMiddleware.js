@@ -7,7 +7,6 @@ export const protect = asyncHandler(async (req, res, next) => {
     const token = req.cookies.token;
 
     if (!token) {
-      console.log ("No token found in cookies");
       return res.status(401).json({ message: "Not authorized, please login!" });
     }
 
@@ -29,5 +28,3 @@ export const protect = asyncHandler(async (req, res, next) => {
     return res.status(401).json({ message: "Not authorized, token failed!" });
   }
 });
-
-
