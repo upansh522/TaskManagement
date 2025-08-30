@@ -43,7 +43,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     maxAge: 30 * 24 * 60 * 60 * 1000,
     sameSite: "lax",
-    secure: false,
+    secure: true,
   });
 
   if (user) {
@@ -91,7 +91,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     maxAge: 30 * 24 * 60 * 60 * 1000,
     sameSite: "lax",
-    secure: false,
+    secure: true,
     });
     res.status(200).json({
       _id,
@@ -114,7 +114,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     maxAge: 30 * 24 * 60 * 60 * 1000,
     sameSite: "lax",
-    secure: false,
+    secure: true,
   });
   res.status(200).json({ message: "User logged out" });
 });

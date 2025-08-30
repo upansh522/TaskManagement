@@ -1,0 +1,86 @@
+# render.yaml
+
+services:
+  # 1. Nginx Reverse Proxy (The public-facing Web Service)
+  - type: web
+    name: task-management-gateway
+    runtime: docker
+    # This tells Render to only rebuild this service when its files change
+    buildFilter:
+      paths:
+      - nginx/**
+    dockerfilePath: ./nginx/dockerfile
+    # Render automatically handles HTTP/HTTPS on its public URL
+    # and forwards traffic to this internal port
+    envVars:
+      - key: PORT
+        value: 80
+
+  # 2. User API (Private Service, only accessible within the network)
+  - type: pserv # pserv stands for Private Service
+    name: user-service
+    runtime: docker
+    buildFilter:
+      paths:
+      - backend/user_service/** # Adjust path if needed
+    dockerfilePath: ./backend/user_service/Dockerfile
+    # Secrets are managed in Render's UI, not in this file
+    envVars:
+      - key: MONGO_URI
+        fromSecret: MONGO_URI # This will be a secret variable in Render
+      - key: JWT_SECRET
+        fromSecret: JWT_SECRET # This will be a secret variable in Render
+      # Use the public URL of your gateway service (from the web service above)
+      - key: CLIENT_URL
+        fromService:
+          type: web
+          name: task-management-gateway
+          property: url
+
+  # 3. Task API (Private Service)
+  - type: pserv
+    name: task-service
+    runtime: docker
+    buildFilter:
+      paths:
+      - backend/task_service/** # Adjust path if needed
+    dockerfilePath: ./backend/task_service/Dockerfile
+    envVars:
+      - key: MONGO_URI
+        fromSecret: MONGO_URI
+      - key: JWT_SECRET
+        fromSecret: JWT_SECRET
+      - key: CLIENT_URL
+        fromService:
+          type: web
+          name: task-management-gateway
+          property: url
+      # Services can talk to each other directly by name
+      - key: USER_SERVICE_URL
+        value: http://user-service:8001
+
+  # 4. Client / Frontend (Private Service, served via Nginx)
+  - type: pserv
+    name: client
+    runtime: docker
+    buildFilter:
+      paths:
+      - client/**
+    dockerfilePath: ./client/Dockerfile
+    # These variables are needed AT BUILD TIME for Next.js
+    dockerBuildArgs:
+      NEXT_PUBLIC_CLIENT_URL:
+        fromService:
+          type: web
+          name: task-management-gateway
+          property: url
+      NEXT_PUBLIC_USER_SERVICE_URL:
+        fromService:
+          type: web
+          name: task-management-gateway
+          property: url
+      NEXT_PUBLIC_TASK_SERVICE_URL:
+        fromService:
+          type: web
+          name: task-management-gateway
+          property: url
