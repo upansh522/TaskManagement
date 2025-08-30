@@ -3,32 +3,27 @@ services:
   - type: web
     name: task-management-gateway
     runtime: docker
-    # This tells Render to only rebuild this service when its files change
     buildFilter:
       paths:
-      - nginx/**
+        - nginx/**
     dockerfilePath: ./nginx/dockerfile
-    # Render automatically handles HTTP/HTTPS on its public URL
-    # and forwards traffic to this internal port
     envVars:
       - key: PORT
         value: 80
 
   # 2. User API (Private Service, only accessible within the network)
-  - type: pserv # pserv stands for Private Service
+  - type: pserv
     name: user-service
     runtime: docker
     buildFilter:
       paths:
-      - backend/user_service/** # Adjust path if needed
+        - backend/user_service/**
     dockerfilePath: ./backend/user_service/Dockerfile
-    # Secrets are managed in Render's UI, not in this file
     envVars:
       - key: MONGO_URI
-        fromSecret: MONGO_URI # This will be a secret variable in Render
+        fromSecret: MONGO_URI
       - key: JWT_SECRET
-        fromSecret: JWT_SECRET # This will be a secret variable in Render
-      # Use the public URL of your gateway service (from the web service above)
+        fromSecret: JWT_SECRET
       - key: CLIENT_URL
         fromService:
           type: web
@@ -41,7 +36,7 @@ services:
     runtime: docker
     buildFilter:
       paths:
-      - backend/task_service/** # Adjust path here if needed
+        - backend/task_service/**
     dockerfilePath: ./backend/task_service/Dockerfile
     envVars:
       - key: MONGO_URI
@@ -53,7 +48,6 @@ services:
           type: web
           name: task-management-gateway
           property: url
-      # Services can talk to each other directly by name
       - key: USER_SERVICE_URL
         value: http://user-service:8001
 
@@ -63,21 +57,20 @@ services:
     runtime: docker
     buildFilter:
       paths:
-      - client/**
+        - client/**
     dockerfilePath: ./client/Dockerfile
-    # --- THIS ENTIRE BLOCK HAS BEEN CORRECTLY INDENTED ---
-    args:
-      NEXT_PUBLIC_CLIENT_URL:
+    envVars:
+      - key: NEXT_PUBLIC_CLIENT_URL
         fromService:
           type: web
           name: task-management-gateway
           property: url
-      NEXT_PUBLIC_USER_SERVICE_URL:
+      - key: NEXT_PUBLIC_USER_SERVICE_URL
         fromService:
           type: web
           name: task-management-gateway
           property: url
-      NEXT_PUBLIC_TASK_SERVICE_URL:
+      - key: NEXT_PUBLIC_TASK_SERVICE_URL
         fromService:
           type: web
           name: task-management-gateway
