@@ -10,11 +10,12 @@ const generateToken = (user) => {
     isVerified: user.isVerified
   };
 
+  // --- ADD THIS LINE FOR DEBUGGING ---
+  console.log("SECRET USED FOR SIGNING:", process.env.JWT_SECRET);
+
   return jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: "30d",
   });
 };
 
 export default generateToken;
-
-

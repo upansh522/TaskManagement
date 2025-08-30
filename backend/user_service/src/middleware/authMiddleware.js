@@ -7,8 +7,12 @@ export const protect = asyncHandler(async (req, res, next) => {
     const token = req.cookies.token;
 
     if (!token) {
+      console.log ("No token found in cookies");
       return res.status(401).json({ message: "Not authorized, please login!" });
     }
+
+    // --- ADD THIS LINE FOR DEBUGGING ---
+    console.log("SECRET USED FOR VERIFYING:", process.env.JWT_SECRET);
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
