@@ -84,3 +84,4 @@ services:
           type: web
           name: task-management-gateway
           property: url
+
