@@ -91,7 +91,7 @@ Docker and Docker Compose
 Local Installation
 Clone the repository:
 
-git clone [https://github.com/your-username/task_management.git](https://github.com/your-username/task_management.git)
+git clone [https://github.com/upansh522.taskManagement.git](https://github.com/upansh522.taskManagement.git)
 cd task_management
 
 Create the environment file:
@@ -115,7 +115,7 @@ Open your browser and navigate to http://localhost.
 🚀 Deployment
 This application is deployed on an Amazon EC2 instance. The deployment process involves:
 
-Provisioning an EC2 instance (e.g., t3.small running Ubuntu).
+Provisioning an EC2 instance (e.g., t3.micro running Ubuntu).
 
 Configuring the security group to allow HTTP (port 80) and SSH (port 22) traffic.
 
