@@ -42,9 +42,8 @@ export const registerUser = asyncHandler(async (req, res) => {
     path: "/",
     httpOnly: true,
     maxAge: 30 * 24 * 60 * 60 * 1000,
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    secure: process.env.NODE_ENV === "production",
-    domain: process.env.NODE_ENV === "production" ? undefined : "localhost",
+    sameSite: "lax",
+    secure: fasle,
   });
 
   if (user) {
@@ -89,11 +88,10 @@ export const loginUser = asyncHandler(async (req, res) => {
     const { _id, name, email, role, photo, bio, isVerified } = userExists;
     res.cookie("token", token, {
       path: "/",
-      httpOnly: true,
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production",
-      domain: process.env.NODE_ENV === "production" ? undefined : "localhost",
+    httpOnly: true,
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    sameSite: "lax",
+    secure: fasle,
     });
     res.status(200).json({
       _id,
@@ -112,11 +110,11 @@ export const loginUser = asyncHandler(async (req, res) => {
 
 export const logoutUser = asyncHandler(async (req, res) => {
   res.clearCookie("token", {
-    httpOnly: true,
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    secure: process.env.NODE_ENV === "production",
     path: "/",
-    domain: process.env.NODE_ENV === "production" ? undefined : "localhost",
+    httpOnly: true,
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    sameSite: "lax",
+    secure: fasle,
   });
   res.status(200).json({ message: "User logged out" });
 });
