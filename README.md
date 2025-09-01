@@ -129,4 +129,4 @@ Updating the docker-compose.yml file with the server's public IP address.
 
 Running docker-compose up --build -d to build and launch the application in the background.
 
-Project Link: http://ec2-13-60-61-43.eu-north-1.compute.amazonaws.com/login
+Project Link: http://ec2-13-48-130-60.eu-north-1.compute.amazonaws.com/login
