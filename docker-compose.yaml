@@ -22,7 +22,7 @@ services:
       - PORT=8001
       - MONGO_URI=${MONGO_URI}
       - JWT_SECRET=${JWT_SECRET}
-      - CLIENT_URL=http://ec2-13-60-2-184.eu-north-1.compute.amazonaws.com
+      - CLIENT_URL=http://ec2-13-48-130-60.eu-north-1.compute.amazonaws.com
     expose:
       - "8001"
     restart: unless-stopped
@@ -36,7 +36,7 @@ services:
       - PORT=8002
       - MONGO_URI=${MONGO_URI}
       - JWT_SECRET=${JWT_SECRET}
-      - CLIENT_URL=http://ec2-13-60-2-184.eu-north-1.compute.amazonaws.com
+      - CLIENT_URL=http://ec2-13-48-130-60.eu-north-1.compute.amazonaws.com
       - USER_SERVICE_URL=http://nginx/api/users
     expose:
       - "8002"
@@ -51,9 +51,9 @@ services:
       context: ./client
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_CLIENT_URL: http://ec2-13-60-2-184.eu-north-1.compute.amazonaws.com
-        NEXT_PUBLIC_USER_SERVICE_URL: http://ec2-13-60-2-184.eu-north-1.compute.amazonaws.com/api/users
-        NEXT_PUBLIC_TASK_SERVICE_URL: http://ec2-13-60-2-184.eu-north-1.compute.amazonaws.com/api/tasks
+        NEXT_PUBLIC_CLIENT_URL: http://ec2-13-48-130-60.eu-north-1.compute.amazonaws.com
+        NEXT_PUBLIC_USER_SERVICE_URL: http://ec2-13-48-130-60.eu-north-1.compute.amazonaws.com/api/users
+        NEXT_PUBLIC_TASK_SERVICE_URL: http://ec2-13-48-130-60.eu-north-1.compute.amazonaws.com/api/tasks
     expose:
       - "3000"
     depends_on:
