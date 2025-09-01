@@ -10,6 +10,10 @@ services:
     depends_on:
       - user-service
       - task-service
+      - user-service_1
+      - task-service_1
+      - user-service_2
+      - task-service_2
       - client
     networks:
       - task-network
@@ -29,7 +33,35 @@ services:
     networks:
       - task-network
 
-  task-service:
+  user-service_1:
+    image: upansh522/task_management:user_service
+    environment:
+      - NODE_ENV=production
+      - PORT=8001
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - CLIENT_URL=http://ec2-13-48-130-60.eu-north-1.compute.amazonaws.com
+    expose:
+      - "8001"
+    restart: unless-stopped
+    networks:
+      - task-network
+
+user-service_2:
+    image: upansh522/task_management:user_service
+    environment:
+      - NODE_ENV=production
+      - PORT=8001
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - CLIENT_URL=http://ec2-13-48-130-60.eu-north-1.compute.amazonaws.com
+    expose:
+      - "8001"
+    restart: unless-stopped
+    networks:
+      - task-network
+
+task-service:
     image: upansh522/task_management:task_service
     environment:
       - NODE_ENV=production
@@ -42,11 +74,53 @@ services:
       - "8002"
     depends_on:
       - user-service
+      - user-service_1
+      - user-service_2
     restart: unless-stopped
     networks:
       - task-network
 
-  client:
+task-servic_1:
+    image: upansh522/task_management:task_service
+    environment:
+      - NODE_ENV=production
+      - PORT=8002
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - CLIENT_URL=http://ec2-13-48-130-60.eu-north-1.compute.amazonaws.com
+      - USER_SERVICE_URL=http://nginx/api/users
+    expose:
+      - "8002"
+    depends_on:
+      - user-service
+      - user-service_1
+      - user-service_2
+    restart: unless-stopped
+    networks:
+      - task-network
+
+
+task-service_2:
+    image: upansh522/task_management:task_service
+    environment:
+      - NODE_ENV=production
+      - PORT=8002
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - CLIENT_URL=http://ec2-13-48-130-60.eu-north-1.compute.amazonaws.com
+      - USER_SERVICE_URL=http://nginx/api/users
+    expose:
+      - "8002"
+    depends_on:
+      - user-service
+      - user-service_1
+      - user-service_2
+    restart: unless-stopped
+    networks:
+      - task-network
+
+
+client:
     build:
       context: ./client
       dockerfile: Dockerfile
